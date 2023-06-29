@@ -4,6 +4,8 @@ import os
 from furiosa import runtime
 from furiosa.runtime import session
 import numpy as np
+import cv2
+from pudb import set_trace
 
 LOGLEVEL = os.environ.get('FURIOSA_LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(level=LOGLEVEL)
@@ -19,7 +21,11 @@ def run_example():
     input_tensor = sess.inputs()[0]
     
     # Generate the random input tensor according to the input shape
-    input = np.random.randint(0, 255, input_tensor.shape).astype("float32")
+    img_path = 'testsets/set12/01.png'
+    img = cv2.imread(img_path)
+    set_trace()
+    img = img.transpose(2, 0, 1).astype("float32")
+    input = img[np.newaxis, :, :, :]
     
     # Run the inference
     outputs = sess.run(input)
