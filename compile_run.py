@@ -21,23 +21,34 @@ def run_example():
     
     input_tensor = sess.inputs()[0]
     
-    # Generate the random input tensor according to the input shape
-    img_path = 'testsets/set12/01.png'
+    img_path = 'testsets/set12/05.png'
     img = cv2.imread(img_path)
-    util.imsave(img, 'noised.png')    
+
+    # degrade
+    noise_level_img = 50
+    img = util.uint2single(img)  # scale down [0,1]
+    np.random.seed(seed=0)  # for reproducibility
+    img += np.random.normal(0, noise_level_img/255., img.shape)
+    util.imshow(util.single2uint(img),
+                title='Noisy image {}'.format(noise_level_img))
+
+    img = util.single2uint(img)
+    # set_trace()
     img = img.transpose(2, 0, 1).astype("float32")
     input = img[np.newaxis, :, :, :]
-    
+    # set_trace()
+
     # Run the inference
     outputs = sess.run(input)
     
     print("== Output ==")
     print(f'Tensor output shape:\n{outputs}')
-    set_trace()
-    print(outputs[0].numpy())
-    print(outputs[0].shape)
-    cv2.imwrite('denoised.png',
-                np.squeeze(outputs[0].numpy()).transpose(1,2,0)) 
 
+    out_img = np.squeeze(outputs[0].numpy()).transpose(1,2,0)
+    cv2.imwrite('denoised.png', out_img)
+    # util.imshow(out_img.round().astype(np.uint8), title='denoised')
+    util.imshow(out_img.round().astype(np.uint8), title='denoised')
+                
+    
 if __name__ == "__main__":
     run_example()
