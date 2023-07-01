@@ -8,14 +8,23 @@ import cv2
 from utils import utils_image as util
 from pudb import set_trace
 
+import argparse
+
+parser = argparse.ArgumentParser(
+                    prog='convert_dncnn_2_onnx',
+                    description='convert to onnx',
+                    epilog='output file with onnx suffix')
+
+parser.add_argument('--quant_model_path', required=True, type=str)
+args = parser.parse_args()
+
 LOGLEVEL = os.environ.get('FURIOSA_LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(level=LOGLEVEL)
 
-quantized_model_path = './dncnn.dfg'
 def run_example():
     runtime.__full_version__
 
-    sess = session.create(str(quantized_model_path))
+    sess = session.create(str(args.quant_model_path))
     print('Session Summary:')
     sess.print_summary()
     
@@ -25,7 +34,7 @@ def run_example():
     img = cv2.imread(img_path)
 
     # degrade
-    noise_level_img = 50
+    noise_level_img = 75
     img = util.uint2single(img)  # scale down [0,1]
     np.random.seed(seed=0)  # for reproducibility
     img += np.random.normal(0, noise_level_img/255., img.shape)
