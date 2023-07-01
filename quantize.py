@@ -19,6 +19,15 @@ from furiosa.quantizer import quantize, Calibrator, CalibrationMethod
 import cv2
 import numpy as np
 from pudb import set_trace
+import argparse
+
+parser = argparse.ArgumentParser(
+                    prog='convert_dncnn_2_onnx',
+                    description='convert to onnx',
+                    epilog='output file with onnx suffix')
+
+parser.add_argument('--model_name', required=True, type=str)
+args = parser.parse_args()
 
 img_dim = (3, 256, 256)
 BATCH_SIZE = 1
@@ -27,7 +36,7 @@ class CalibrationDataset(Dataset):
 	def __init__(self, imgs_path):
                 self.imgs_path = imgs_path
                 file_list = glob.glob(os.path.join(self.imgs_path, "*"))
-                print(f'Printing file list:')
+                print(f'Printing calibration file list:')
                 print(file_list)
                 self.data = []
                 for path in file_list:
@@ -41,7 +50,7 @@ class CalibrationDataset(Dataset):
 	def __getitem__(self, idx):
                 img_path = self.data[idx]
                 img = cv2.imread(img_path)
-                set_trace()
+                # set_trace()
                 img = cv2.resize(img, self.img_dim)
                 img_tensor = torch.from_numpy(img)
                 img_tensor = img_tensor.permute(2, 0, 1)
@@ -51,7 +60,7 @@ class CalibrationDataset(Dataset):
 
 def create_quantized_dfg():
 
-    model = onnx.load_model("dncnn_25.onnx")
+    model = onnx.load_model(args.model_name)
 
     calibration_dataset = CalibrationDataset('testsets/set12')
 
@@ -74,7 +83,7 @@ def create_quantized_dfg():
 
     model_quantized = quantize(model, ranges)
 
-    with open("dncnn.dfg", "wb") as f:
+    with open(os.path.splitext(args.model_name)[0] + '.dfg', "wb") as f:
         f.write(bytes(model_quantized))
 
 
