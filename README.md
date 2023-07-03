@@ -1,16 +1,28 @@
-#### Example Furiosa worklfow
+#### Example Furiosa Worklfow for Image Restoration
 
 Uses the dncnn model from [KAIR](https://github.com/cszn/KAIR) and leverages portions of the code.
 You can find the dncnn model paramters is the accompanying [model zoo](https://github.com/cszn/KAIR/tree/master/model_zoo) 
+
+
+##### Download the dncnn mode
+Download the PyTorch model as instructed in the [model zoo folder](https://github.com/cszn/KAIR/tree/master/model_zoo)
+
+```
+python main_download_pretrained_models.py --models "DnCNN" --model_dir "model_zoo"
+```
 
 ##### Convert to ONNX
 ```
 ./convert_dncnn_2_onnx.py --bs 1 --model_name dnn_color_blind
 ```
-##### Quantize
+This generates an ONNX file named `dncnn_color_blind.onnx`
+
+##### Quantize the Model
 ```
 ./quantize.py --model_name dncnn_color_blind.onnx
 ```
+This generates an DFG file named `dncnn_color_blind.dfg`
+
 ##### Compile and run
 ```
 ./compile_run.py --quant_model_path dncnn_color_blind.dfg
