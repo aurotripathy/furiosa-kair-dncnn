@@ -30,34 +30,42 @@ def run_example():
     sess.print_summary()
     
     input_tensor = sess.inputs()[0]
-    
-    img_path = 'testsets/set12/05.png'
-    img = cv2.imread(img_path)
 
-    # degrade
-    img = util.uint2single(img)  # scale down [0,1]
-    np.random.seed(seed=0)  # for reproducibility
-    img += np.random.normal(0, args.noise_level_img/255., img.shape)
-    util.imshow(util.single2uint(img),
-                title='Noisy image {}'.format(args.noise_level_img))
+    img_paths = util.get_image_paths('testsets/set12/')
+    set_trace()
 
-    img = util.single2uint(img)
-    # set_trace()
-    img = img.transpose(2, 0, 1).astype("float32")
-    input = img[np.newaxis, :, :, :]
-    # set_trace()
+    for img_path in img_paths:
+        
+        in_img = cv2.imread(img_path)
 
-    # Run the inference
-    outputs = sess.run(input)
-    
-    print("== Output ==")
-    print(f'Tensor output shape:\n{outputs}')
+        # degrade
+        img = util.uint2single(in_img)  # scale down [0,1]
+        np.random.seed(seed=0)  # for reproducibility
+        img += np.random.normal(0, args.noise_level_img/255., img.shape)
+        util.imshow(util.single2uint(img),
+                    title='Noisy image {}'.format(args.noise_level_img))
 
-    out_img = np.squeeze(outputs[0].numpy()).transpose(1,2,0)
-    cv2.imwrite('denoised.png', out_img)
-    # util.imshow(out_img.round().astype(np.uint8), title='denoised')
-    util.imshow(out_img.round().astype(np.uint8), title='denoised')
-                
-    
+        img = util.single2uint(img)
+        # set_trace()
+        img = img.transpose(2, 0, 1).astype("float32")
+        input = img[np.newaxis, :, :, :]
+        # set_trace()
+
+        # Run the inference
+        outputs = sess.run(input)
+
+        print("== Output ==")
+        print(f'Tensor output shape:\n{outputs}')
+
+        out_img = np.squeeze(outputs[0].numpy()).transpose(1,2,0)
+        cv2.imwrite('denoised.png', out_img)
+        # util.imshow(out_img.round().astype(np.uint8), title='denoised')
+        util.imshow(out_img.round().astype(np.uint8), title='denoised')
+
+        psnr = util.calculate_psnr(out_img, in_img, border=0)
+        ssim = util.calculate_ssim(out_img, in_img, border=0)
+        print(f'{img_path:s} - PSNR: {psnr:.2f} dB; SSIM: {ssim:.4f}.')
+
+
 if __name__ == "__main__":
     run_example()
