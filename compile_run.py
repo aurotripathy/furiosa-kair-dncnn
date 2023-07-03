@@ -24,6 +24,7 @@ LOGLEVEL = os.environ.get('FURIOSA_LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(level=LOGLEVEL)
 
 img_size = (256, 256)
+
 def run_example():
     runtime.__full_version__
 
@@ -50,16 +51,13 @@ def run_example():
                         title='Noisy image {}'.format(args.noise_level_img))
 
         img = util.single2uint(img)
-        # set_trace()
         img = img.transpose(2, 0, 1).astype("float32")
         input = img[np.newaxis, :, :, :]
-        # set_trace()
 
-        # Run the inference
-        outputs = sess.run(input)
+        outputs = sess.run(input)  # inference
 
-        print("== Output ==")
-        print(f'Tensor output shape:\n{outputs}')
+        # print("== Output ==")
+        # print(f'Tensor output shape:\n{outputs}')
 
         out_img = np.squeeze(outputs[0].numpy()).transpose(1,2,0)
         cv2.imwrite('denoised.png', out_img)
