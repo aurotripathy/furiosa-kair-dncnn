@@ -4,12 +4,12 @@ Uses the dncnn model from [KAIR](https://github.com/cszn/KAIR) and leverages por
 You can find the dncnn model paramters is the accompanying [model zoo](https://github.com/cszn/KAIR/tree/master/model_zoo) 
 
 
-##### Download the dncnn mode
+##### Download the dncnn model
 Download the PyTorch model as instructed in the [model zoo folder](https://github.com/cszn/KAIR/tree/master/model_zoo)
-
 ```
 python main_download_pretrained_models.py --models "DnCNN" --model_dir "model_zoo"
 ```
+I'm working with the three-channel (RGB) model `dncnn_color_blind`
 
 ##### Convert to ONNX
 ```
