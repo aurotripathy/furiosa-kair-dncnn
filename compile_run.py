@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser(
                     epilog='output file with onnx suffix')
 
 parser.add_argument('--quant_model_path', required=True, type=str)
+parser.add_argument('--noise_level_img', type=int, default=15, help='noise level: 15, 25, 50')
 args = parser.parse_args()
 
 LOGLEVEL = os.environ.get('FURIOSA_LOG_LEVEL', 'INFO').upper()
@@ -34,12 +35,11 @@ def run_example():
     img = cv2.imread(img_path)
 
     # degrade
-    noise_level_img = 75
     img = util.uint2single(img)  # scale down [0,1]
     np.random.seed(seed=0)  # for reproducibility
-    img += np.random.normal(0, noise_level_img/255., img.shape)
+    img += np.random.normal(0, args.noise_level_img/255., img.shape)
     util.imshow(util.single2uint(img),
-                title='Noisy image {}'.format(noise_level_img))
+                title='Noisy image {}'.format(args.noise_level_img))
 
     img = util.single2uint(img)
     # set_trace()
